@@ -24,7 +24,7 @@ with stdenv.lib; let
   depToFetch = args @ { resolved ? null, dependencies ? {}, ... }:
     (optional (resolved != null) (depFetchOwn args)) ++ (depsToFetches dependencies);
 
-  cacheInput = oFile: iFile: writeText oFile (toJSON (listToAttrs (builtins.trace (depToFetch iFile) (depToFetch iFile))));
+  cacheInput = oFile: iFile: writeText oFile (toJSON (listToAttrs (builtins.trace (builtins.tryEval (depToFetch iFile)) (depToFetch iFile))));
 
   patchShebangs = writeShellScriptBin "patchShebangs.sh" ''
     set -e
